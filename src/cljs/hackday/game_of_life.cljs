@@ -14,7 +14,7 @@
         init-values (interpose :alive init-indexes)]
     init-game (apply (partial assoc game) init-values)))
 
-(defn neighbour-vals [game i]
+(defn neighbours [game i]
   [(get game (- i (+ param 1)))
    (get game (- i param))
    (get game (- i (- param 1)))
@@ -31,20 +31,27 @@
     :dead))
 
 (defn alive-cell-step [neighbours]
-  :alive)
+  (let [alive-neighbour-nb (-> (filter #(= :alive %) neighbours)
+                             count)]
+    (cond
+      (< alive-neighbour-nb 2) :dead
+      (= alive-neighbour-nb 2) :alive
+      (= alive-neighbour-nb 3) :alive
+      (> alive-neighbour-nb 3) :dead)))
 
-(defn cell-step [cell neighbours]
-  (if (= :dead cell)
-     (dead-cell-step neighbours)
-    :alive))
 
-(defn game-step* [game neighbours]
-  (map cell-step game neighbours))
+
+(defn cell-step [game cell index]
+  (let [neighbours (neighbours game index)]
+    (if (= :dead cell)
+      (dead-cell-step neighbours)
+      (alive-cell-step neighbours))))
+
+(defn game-step* [game indexes]
+  (map (partial cell-step game) game indexes))
 
 (defn game-step [game]
-  (let [neighbours (map (partial neighbour-vals game)
-                        (range (count game)))]
-    (game-step* game neighbours)))
+  (game-step* game (-> game count range)))
 
 (let [game (init-game game)]
   (.log js/console (str (game->string game)))
