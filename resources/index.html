@@ -8,5 +8,29 @@
     <script type="text/javascript">
       goog.require("hackday.game_of_life");
     </script>
+  <script>
+    var gol = hackday.game_of_life;
+    //console.log(gol.old_game);
+
+    var updateGame = function(){
+      for (var i = 0; i < gol.old_game.length; i++){
+        var cell = gol.old_game[i];
+        var newCell = gol.cell_step(gol.old_game, cell, i);
+        gol.new_game[i] = newCell;
+      }
+      gol.old_game = gol.new_game;
+      return gol.old_game;
+      //console.log(gol.name__GT_string(gol.old_game));
+    }
+
+    function loopGame(i){
+      for (var j = 0; j < i; j++){
+        updateGame();
+      }
+      return gol.old_game;
+    }
+
+
+  </script>
   </body>
 </html>
