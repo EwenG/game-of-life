@@ -1,28 +1,28 @@
 (ns hackday.game-of-life)
 
+(set! *print-fn* #(.log js/console %))
+
 (def param 10)
-(def game (-> (repeatedly (* param param)
-                          (constantly :dead))
-              vec))
 
 (defn game->string [game]
   (->> (interpose "\n" (partition 10 game))
-      (apply str)))
+       (apply str)))
 
 (defn init-game [game]
-  (let [init-indexes (take 10 (repeatedly (fn [] (rand-int 100))))
-        init-values (interpose :alive init-indexes)]
+  (let [init-indexes (take 60 (repeatedly (fn [] (rand-int 100))))
+        init-values (vec (interpose :alive init-indexes))
+        init-values (conj init-values :alive)]
     init-game (apply (partial assoc game) init-values)))
 
 (defn neighbours [game i]
-  [(get game (- i (+ param 1)))
-   (get game (- i param))
-   (get game (- i (- param 1)))
-   (get game (+ i 1))
-   (get game (+ i (+ param 1)))
-   (get game (+ i param))
-   (get game (+ i (- param 1)))
-   (get game (- i 1))])
+  [(nth game (- i (+ param 1)) nil)
+   (nth game (- i param) nil)
+   (nth game (- i (- param 1)) nil)
+   (nth game (+ i 1) nil)
+   (nth game (+ i (+ param 1)) nil)
+   (nth game (+ i param) nil)
+   (nth game (+ i (- param 1)) nil)
+   (nth game (- i 1) nil)])
 
 (defn dead-cell-step [neighbours]
   (if (= 3 (-> (filter #(= :alive %) neighbours)
@@ -32,7 +32,7 @@
 
 (defn alive-cell-step [neighbours]
   (let [alive-neighbour-nb (-> (filter #(= :alive %) neighbours)
-                             count)]
+                               count)]
     (cond
       (< alive-neighbour-nb 2) :dead
       (= alive-neighbour-nb 2) :alive
@@ -59,13 +59,34 @@
 
 
 
+#_(def game (-> (repeatedly (* param param)
+                          (constantly :dead))
+              vec
+              init-game))
+
+(def game [:dead :dead :dead :alive :dead :dead :alive :dead :alive :dead :alive :alive :dead :alive :alive :dead :dead :dead :alive :alive :alive :dead :alive :alive :alive :alive :dead :dead :dead :alive :dead :dead :alive :alive :dead :dead :dead :dead :alive :dead :dead :dead :dead :alive :alive :dead :alive :dead :dead :alive :alive :dead :dead :dead :alive :dead :alive :dead :alive :alive :alive :dead :dead :dead :alive :alive :alive :dead :alive :dead :dead :alive :alive :dead :dead :alive :alive :alive :dead :dead :dead :dead :dead :alive :alive :alive :dead :dead :dead :dead :dead :alive :dead :dead :dead :dead :alive :dead :dead :dead])
 
 
-(let [game (init-game game)
-      games (iterate game-step game)]
-  #_(display-game game)
-  (display-game (nth games 2))
-  )
+
+(def games (iterate game-step game))
+
+
+(defn loop-game [i]
+  (time (loop [game game
+               i i]
+          (if (= i 0)
+            (game->string game)
+            (recur (game-step game) (- i 1))))))
+
+
+
+(defn nth-game [i]
+  (display-game (nth games i)))
+
+
+(display-game game)
+
+(.log js/console (str game))
 
 
 
