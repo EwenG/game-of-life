@@ -3,7 +3,7 @@
             :source-paths ["src/cljs"]
             :resource-paths ["assets"]
             :dependencies [[org.clojure/clojure "1.7.0-alpha5"]
-                           [org.clojure/clojurescript "0.0-2850"]]
+                           [org.clojure/clojurescript "0.0-2913"]]
             :plugins [[lein-cljsbuild "1.0.4"]]
             :cljsbuild {
                         :builds [{:id "dev"
