@@ -1,24 +1,31 @@
 (ns hackday.game-of-life)
 
-(defn gen-cell []
-  (let [x (rand-int 2)]
-    (if (= 0 x) :dead :alive)))
-
-(def game (repeatedly 100 (constantly :dead)))
+(def param 10)
+(def game (-> (repeatedly (* param param)
+                          (constantly :dead))
+              vec))
 
 (defn game->string [game]
   (->> (interpose "\n" (partition 10 game))
       (apply str)))
 
-#_(.log js/console (apply str (game->string game)))
-(.log js/console (str (gen-cell)))
+(defn neighbour-vals [game i]
+  [(get game (- i (+ param 1)))
+   (get game (- i param))
+   (get game (- i (- param 1)))
+   (get game (+ i 1))
+   (get game (+ i (+ param 1)))
+   (get game (+ i param))
+   (get game (+ i (- param 1)))
+   (get game (- i 1))])
 
-(let [init-indexes (take 10 (repeatedly (fn [] (rand-int 100))))
-      init-values (doall (interpose :alive init-indexes))
-      init-game (apply (partial assoc game) init-values)]
-  (.log js/console (str init-values)))
+(defn init-game [game]
+  (let [init-indexes (take 10 (repeatedly (fn [] (rand-int 100))))
+        init-values (interpose :alive init-indexes)]
+    init-game (apply (partial assoc game) init-values)))
 
-(.log js/console (str (apply assoc [[1] 0 3])))
+
+(.log js/console (str (neighbour-vals (-> game init-game) 0)))
 
 
 
