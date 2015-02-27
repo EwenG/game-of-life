@@ -9,6 +9,11 @@
   (->> (interpose "\n" (partition 10 game))
       (apply str)))
 
+(defn init-game [game]
+  (let [init-indexes (take 10 (repeatedly (fn [] (rand-int 100))))
+        init-values (interpose :alive init-indexes)]
+    init-game (apply (partial assoc game) init-values)))
+
 (defn neighbour-vals [game i]
   [(get game (- i (+ param 1)))
    (get game (- i param))
@@ -19,19 +24,38 @@
    (get game (+ i (- param 1)))
    (get game (- i 1))])
 
-(defn init-game [game]
-  (let [init-indexes (take 10 (repeatedly (fn [] (rand-int 100))))
-        init-values (interpose :alive init-indexes)]
-    init-game (apply (partial assoc game) init-values)))
+(defn dead-cell-step [neighbours]
+  (if (= 3 (-> (filter #(= :alive %) neighbours)
+               count))
+    :alive
+    :dead))
 
+(defn alive-cell-step [neighbours]
+  :alive)
 
-(.log js/console (str (neighbour-vals (-> game init-game) 0)))
+(defn cell-step [cell neighbours]
+  (if (= :dead cell)
+     (dead-cell-step neighbours)
+    :alive))
 
+(defn game-step* [game neighbours]
+  (map cell-step game neighbours))
 
+(defn game-step [game]
+  (let [neighbours (map (partial neighbour-vals game)
+                        (range (count game)))]
+    (game-step* game neighbours)))
 
-(comment
-
-  (.log js/console "e")
-
+(let [game (init-game game)]
+  (.log js/console (str (game->string game)))
+  (.log js/console (str (-> game
+                            game-step
+                            game->string)))
   )
+
+
+
+
+
+
 
