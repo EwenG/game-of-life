@@ -47,7 +47,9 @@
       (dead-cell-step neighbours)
       (alive-cell-step neighbours))))
 
-
+(defn game-time [f]
+  (time (f))
+  old-game)
 
 
 #_(.log js/console (str (game->string old-game)))

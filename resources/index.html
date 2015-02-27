@@ -16,6 +16,7 @@
       for (var i = 0; i < gol.old_game.length; i++){
         var cell = gol.old_game[i];
         var newCell = gol.cell_step(gol.old_game, cell, i);
+        //console.log(cell + " " + newCell);
         gol.new_game[i] = newCell;
       }
       gol.old_game = gol.new_game;
@@ -24,11 +25,13 @@
     }
 
     function loopGame(i){
+      gol.game_time(function(){
       for (var j = 0; j < i; j++){
         updateGame();
       }
       return gol.old_game;
-    }
+    })
+    return gol.old_game;}
 
 
   </script>
