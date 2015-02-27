@@ -53,12 +53,20 @@
 (defn game-step [game]
   (game-step* game (-> game count range)))
 
-(let [game (init-game game)]
-  (.log js/console (str (game->string game)))
-  (.log js/console (str (-> game
-                            game-step
-                            game->string)))
+(defn display-game [game]
+  (let [tag (.getElementById js/document "game")]
+    (aset tag "textContent" (game->string game))))
+
+
+
+
+
+(let [game (init-game game)
+      games (iterate game-step game)]
+  #_(display-game game)
+  (display-game (nth games 2))
   )
+
 
 
 
